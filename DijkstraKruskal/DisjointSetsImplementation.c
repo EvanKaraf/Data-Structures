@@ -1,6 +1,6 @@
 #include "DisjointSetsInterface.h"
 
-hello
+
 void MakeSet(int *Represent,int* rank,SetItem ItemToMake){
     Represent[ItemToMake] = ItemToMake;
     rank[ItemToMake] = 1;
