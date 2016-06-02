@@ -40,9 +40,9 @@ void InitializeTable(Table *T) {
         T->TableArray[i].LEnd = NULL;
     }
 }
-/*Searches for a given key. Finds initial hash address. 
-/If the bucket at adress has been split find new address 
-/to check whether key has been rehashed or not. 
+/*Searches for a given key. Finds initial hash address.
+/If the bucket at adress has been split find new address
+/to check whether key has been rehashed or not.
 /When final address is retrieved search there.*/
 int SearchHash(Table T,char key[100]){
     int i = h(key,T.doubles);
@@ -97,13 +97,11 @@ void RemoveListNode(ListNode** L,ListNode** LEnd,ListNode* NodeToRemove) {
         temp->next = NULL;
         *LEnd = temp;
     } else {
-        ListNode* nextNode;
-        nextNode = temp->next;
         temp->next = temp->next->next;
-        free(nextNode);
+        free(NodeToRemove);
     }
 }
-/*Resets given entry meaning that either clears its list 
+/*Resets given entry meaning that either clears its list
 /or pushes back an entry from list to bucket's starting entry.*/
 void ResetTableEntry(TableEntry *Entry) {
     if (Entry->L == NULL) {
@@ -116,7 +114,7 @@ void ResetTableEntry(TableEntry *Entry) {
     }
 
 }
-/*Rehashes given table. Splits T->p bucket. Traverse through 
+/*Rehashes given table. Splits T->p bucket. Traverse through
 all entries of the T->p bucket and decide if their position will be changed.
 If yes reposition them. */
 int ReHash(Table *T) {
@@ -149,7 +147,7 @@ int ReHash(Table *T) {
 /*Hashes given key.Returns either position or a default value when a rehash is needed.*/
 int HashInsert(Table *T,char key[100],char D[20],int mode) {
     int i;
-    if (mode == REHASH)																					/*If it's called for rehashing find the appropriate address in next segment.*/	
+    if (mode == REHASH)																					/*If it's called for rehashing find the appropriate address in next segment.*/
         i = h(key,T->doubles+1);
     if (mode == HASH){
         i = h(key,T->doubles);
