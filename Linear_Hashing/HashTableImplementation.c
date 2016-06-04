@@ -8,7 +8,7 @@
 #define STARTSZ 4
 #define HASH 1
 #define REHASH -1
-#define TEST 28
+
 /*int h(Key key,int noSegment) {
     int c = 1;
     int M = 16411; //16411
