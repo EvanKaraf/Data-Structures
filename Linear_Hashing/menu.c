@@ -32,7 +32,6 @@ int readFromFile(Table *T) {
     int pos;
     int count = 0;
     float t=0,t1;
-    int flag = 0;
     printf("Enter filename to read from:\n");
     scanf("%s", user_filename);
     FILE *file=fopen(user_filename, "r");
@@ -71,7 +70,7 @@ void readHashEntry(Table *T) {
     else printf("Had to rehash.Please search if you want to find position.\n");
 }
 
-/*Prints given hash table including all keys.*/
+/*Prints given hash table including all keys in a pleasing way.*/
 void printHashTable(Table T){
     int count = 0;
     int i;
@@ -82,9 +81,6 @@ void printHashTable(Table T){
         if (strcmp(T.TableArray[i].key,EmptyKey)) {
             if (T.TableArray[i].L == NULL)
                 printf("In pos %d is key %s\n",i,T.TableArray[i].key);
-            temp = T.TableArray[i].L;
-            if (temp)
-                printf("In position %d key(s): %s->",i,T.TableArray[i].key);
             temp = T.TableArray[i].L;
             if (temp){
                 printf("In position %d key(s): %s->",i,T.TableArray[i].key);
@@ -98,7 +94,7 @@ void printHashTable(Table T){
             count++;
         }
     }
-    printf("Empty buckets are %d \n",count);
+    printf("Empty buckets are %d out of %d buckets \n",count,T.buckets);
     printf("-----------------------------------------------\n");
 }
 /*Read user's input and act accordingly.*/

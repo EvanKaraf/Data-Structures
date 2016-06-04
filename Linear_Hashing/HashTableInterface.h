@@ -8,7 +8,7 @@ int SearchHash(Table T,char key[100]);
 void InsertList(TableEntry *T,ListNode* NodeToInsert);
 void ResetTableEntry(TableEntry *Entry);
 void RemoveListNode(ListNode** L,ListNode** LEnd,ListNode* NodeToRemove);
-int ReHash(Table *T);
+void ReHash(Table *T);
 int HashInsert(Table *T,char key[100],char D[20],int mode);
 
 
