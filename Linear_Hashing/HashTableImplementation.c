@@ -85,7 +85,7 @@ int SearchHash(Table T,char key[100]){
     }
     return -1;
 }
-/*Inserts given node to given bucket.*/
+/*Inserts given node to given bucket's list.*/
 void InsertList(TableEntry *T,ListNode* NodeToInsert) {
     if (T->L==NULL) {
         T->L = NodeToInsert;
