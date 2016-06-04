@@ -80,11 +80,19 @@ void printHashTable(Table T){
     options();
     for (i=0; i<T.buckets; i++) {
         if (strcmp(T.TableArray[i].key,EmptyKey)) {
+<<<<<<< HEAD
             if (T.TableArray[i].L == NULL)
                 printf("In pos %d is key %s\n",i,T.TableArray[i].key);
             temp = T.TableArray[i].L;
             if (temp)
                 printf("In position %d key(s): %s->",i,T.TableArray[i].key);
+=======
+        	if (T.TableArray[i].L == NULL)
+            	printf("In pos %d is key %s\n",i,T.TableArray[i].key);
+            temp = T.TableArray[i].L;
+            if (temp)
+            	printf("In position %d key(s): %s->",i,T.TableArray[i].key);
+>>>>>>> origin/master
             while (temp) {
                 printf("%s->",temp->Entry.key);
                 temp = temp->next;
