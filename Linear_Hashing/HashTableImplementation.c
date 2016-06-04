@@ -16,6 +16,28 @@
     return result;
 }*/
 
+/*int searchAll(Table T){
+    char key[100];
+    char user_filename[150];
+    int count = 0;
+    printf("Enter filename to read from:\n");
+    scanf("%s", user_filename);
+    FILE *file=fopen(user_filename, "r");
+    if (!file) {
+        printf("Error opening file..\n");
+        return -1;                                                                      For debugging purposes.
+    }
+    while (fscanf(file, "%s", key) == 1) {
+        if (SearchHash(T,key) == -1){
+            if(count == 0){
+                printf("first key I couldn't find was %s\n\n",key);
+            }
+            count++;
+        }
+    }
+    printf("Couldnt find %d keys",count);
+}*/
+
 int h(char A[100],int noSegment){
     int h=0, a=127;
     char *K;
@@ -45,26 +67,23 @@ void InitializeTable(Table *T) {
 /to check whether key has been rehashed or not.
 /When final address is retrieved search there.*/
 int SearchHash(Table T,char key[100]){
+    ListNode* temp;
     int i = h(key,T.doubles);
     if (i < T.p){
         i = h(key,T.doubles+1);
     }
-    if (T.TableArray[i].L == NULL){
-        if (strcmp(T.TableArray[i].key,key))
-            return -1;  /*Not found! */
-    }
-    else{
-        ListNode* temp;
-        temp = T.TableArray[i].L;
-        while (temp){
-            if (!strcmp(temp->Entry.key,key)){
-                return i;
-            }
-            temp = temp->next;
+    if (!strcmp(T.TableArray[i].key,key))
+            return i;
+
+    temp = T.TableArray[i].L;
+
+    while (temp){
+        if (!strcmp(temp->Entry.key,key)){
+            return i;
         }
-        return -1;
+        temp = temp->next;
     }
-    return i;  /*In case it is the only item in the bucket. */
+    return -1;
 }
 /*Inserts given node to given bucket.*/
 void InsertList(TableEntry *T,ListNode* NodeToInsert) {
@@ -108,9 +127,10 @@ void ResetTableEntry(TableEntry *Entry) {
         strcpy(Entry->key,EmptyKey);
     } else {
         TableEntry * temp;
+        strcpy(Entry->key,Entry->L->Entry.key);
         temp =  &(Entry->L->Entry);
-        RemoveListNode(&(Entry->L),&(Entry->LEnd),Entry->L);
-        Entry = temp;
+        Entry->L = Entry->L->next;
+        free(temp);
     }
 
 }
@@ -119,24 +139,21 @@ all entries of the T->p bucket and decide if their position will be changed.
 If yes reposition them. */
 int ReHash(Table *T) {
     int i;
-    int oldPos;
-    if (strcmp(T->TableArray[T->p].key,EmptyKey)) {														/*If there is some key in the initial entry of the bucket decide repositioning.*/
-        oldPos = h(T->TableArray[T->p].key,T->doubles);
+
+    i = h(T->TableArray[T->p].key,T->doubles+1);
+    while((i > ((STARTSZ<<T->doubles)-1)) && strcmp(T->TableArray[T->p].key,EmptyKey)){                 /*If there is some key in the initial entry of the bucket decide repositioning.*/
+        HashInsert(T,T->TableArray[T->p].key,T->TableArray[T->p].data,REHASH);
+        ResetTableEntry(&(T->TableArray[T->p]));
         i = h(T->TableArray[T->p].key,T->doubles+1);
-        if (i!= oldPos) {
-            HashInsert(T,T->TableArray[T->p].key,T->TableArray[T->p].data,REHASH);
-            ResetTableEntry(&(T->TableArray[T->p]));
-        }
     }
     if (T->TableArray[T->p].L != NULL) {																/*If list exists,traverse through it and decide repositioning */
         ListNode* temp;
         ListNode* keep;
         temp = T->TableArray[T->p].L;
         while (temp) {
-            oldPos = h(temp->Entry.key,T->doubles);
-            i=h(temp->Entry.key,T->doubles+1);
+            i = h(temp->Entry.key,T->doubles+1);
             keep = temp->next;
-            if (oldPos != i) {
+            if (i > ((STARTSZ<<T->doubles)-1)) {
                 HashInsert(T,temp->Entry.key,temp->Entry.data,REHASH);
                 RemoveListNode(&(T->TableArray[T->p].L),&(T->TableArray[T->p].LEnd),temp);
             }
@@ -151,6 +168,8 @@ int HashInsert(Table *T,char key[100],char D[20],int mode) {
         i = h(key,T->doubles+1);
     if (mode == HASH){
         i = h(key,T->doubles);
+        if (i < T->p)
+            i = h(key,T->doubles+1);
         T->entriesCount++;
         T->loadFactor = T->entriesCount/(double)T->buckets;
     }

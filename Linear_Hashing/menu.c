@@ -32,6 +32,7 @@ int readFromFile(Table *T) {
     int pos;
     int count = 0;
     float t=0,t1;
+    int flag = 0;
     printf("Enter filename to read from:\n");
     scanf("%s", user_filename);
     FILE *file=fopen(user_filename, "r");
@@ -41,7 +42,7 @@ int readFromFile(Table *T) {
     }
     while (fscanf(file, "%s", key) == 1) {
         count++;
-        strcpy(data,"hellogg");
+        strcpy(data,"placeholder");
         t1 = clock();
         pos = HashInsert(T,key,data,HASH);
         t += (clock()-t1)/CLOCKS_PER_SEC;
@@ -79,22 +80,19 @@ void printHashTable(Table T){
     options();
     for (i=0; i<T.buckets; i++) {
         if (strcmp(T.TableArray[i].key,EmptyKey)) {
-            if (T.TableArray[i].L == NULL)
-                printf("In pos %d is key %s\n",i,T.TableArray[i].key);
-            else {
-                temp = T.TableArray[i].L;
-                printf("In position %d key(s): %s->",i,T.TableArray[i].key);
-                while (temp) {
-                    printf("%s->",temp->Entry.key);
-                    temp = temp->next;
-                }
-                printf("\b\b  \n");
+            printf("In pos %d is key %s\n",i,T.TableArray[i].key);
+            temp = T.TableArray[i].L;
+            printf("In position %d key(s): %s->",i,T.TableArray[i].key);
+            while (temp) {
+                printf("%s->",temp->Entry.key);
+                temp = temp->next;
             }
+            printf("\b\b  \n");
         } else if (!strcmp(T.TableArray[i].key,EmptyKey)) {
             count++;
         }
     }
-    printf("Empty buckets are %d and size doubled %d times\n",count,T.doubles);
+    printf("Empty buckets are %d \n",count);
     printf("-----------------------------------------------\n");
 }
 /*Read user's input and act accordingly.*/
@@ -115,19 +113,19 @@ void menu(Table T) {
             break;
         case READ_SINGLE:
             system("clear");
-	    options();
+            options();
             readHashEntry(&T);
             break;
         case PRINT_HASH:
             printHashTable(T);
-	    options();
+            options();
             break;
         case SEARCH_HASH:
             printf("Enter key to search!:\n");
             scanf("%s",key);
             pos = SearchHash(T,key);
             system("clear");
-  	    options();
+            options();
             if (pos == -1) printf("FAILURE\nKey %s isn't in the hash table.\n",key);
             else printf("SUCCESS\nKey %s is in position %d\n",key,pos);
             break;
