@@ -9,6 +9,8 @@
 #define HASH 1
 #define REHASH -1
 
+GEIA SOU!!!!!:D D:D:D::D:D
+
 /*int h(Key key,int noSegment) {
     int c = 1;
     int M = 16411; //16411
