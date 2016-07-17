@@ -66,6 +66,16 @@ void InitializeTable(Table *T) {
     }
 }
 
+/*Reallocates enough memory for one more segment. */
+Table* extendTable(Table *T){
+    int i;
+    T->TableArray = realloc(T->TableArray,(STARTSZ<<(T->doubles+1))*sizeof(TableEntry));
+
+    for(i = (STARTSZ << T->doubles);i < (STARTSZ << (T->doubles+1));i++){
+        strcpy(T->TableArray[i].key,EmptyKey);
+        strcpy(T->TableArray[i].data,EmptyData);
+        T->TableArray[i].L = NULL;
+        T->TableArray[i].LEnd = NULL;
     }
 
     return T;
