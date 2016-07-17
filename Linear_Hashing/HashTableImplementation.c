@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "HashTableTypes.h"
-#define MAX 300000
+#include "HashTableInterface.h"
 #define OVERFLOW 2.4
 #define EmptyKey "0"
+#define EmptyData "0"
 #define STARTSZ 4
 #define HASH 1
 #define REHASH -1
@@ -38,12 +38,14 @@
     printf("Couldnt find %d keys",count);
 }*/
 
-int h(char A[100],int noSegment){
-    int h=0, a=127;
+
+/*Hash function. */
+int h(char A[100],int round){
+    int h=0, a=701;
     char *K;
     K = A;
     for (; *K!='\0'; K++)
-            h = (a*h + *K) % (STARTSZ << noSegment);
+            h = (a*h + *K) % (STARTSZ << round);
     return h;
 }
 
@@ -55,15 +57,21 @@ void InitializeTable(Table *T) {
     T->loadFactor = 0.0;
     T->buckets = STARTSZ;
     T->entriesCount = 0;
-    T->TableArray = malloc(MAX * sizeof(TableEntry));
-    for (i=0; i<MAX; i++) {
+    T->TableArray = malloc(STARTSZ * sizeof(TableEntry));
+    for (i=0; i<STARTSZ; i++) {
         strcpy(T->TableArray[i].key,EmptyKey);
+        strcpy(T->TableArray[i].data,EmptyData);
         T->TableArray[i].L = NULL;
         T->TableArray[i].LEnd = NULL;
     }
 }
+
+    }
+
+    return T;
+}
 /*Searches for a given key. Finds initial hash address.
-/If the bucket at adress has been split find new address
+/If the bucket at address has been split find new address
 /to check whether key has been rehashed or not.
 /When final address is retrieved search there.*/
 int SearchHash(Table T,char key[100]){
@@ -76,7 +84,6 @@ int SearchHash(Table T,char key[100]){
             return i;
 
     temp = T.TableArray[i].L;
-
     while (temp){
         if (!strcmp(temp->Entry.key,key)){
             return i;
@@ -101,14 +108,14 @@ void InsertList(TableEntry *T,ListNode* NodeToInsert) {
 void RemoveListNode(ListNode** L,ListNode** LEnd,ListNode* NodeToRemove) {
     ListNode* temp;
     temp = *L;
-    if (*L == NodeToRemove) {
+    if (*L == NodeToRemove) {                                                                           /*If it's in the start of the list. */
         *L = (*L)->next;
         if (*L == NULL)
             *LEnd = NULL;
         free(NodeToRemove);
         return;
     }
-    while(temp->next!= NodeToRemove) {
+    while(temp->next!= NodeToRemove) {                                                                  /*else traverse through the list until you find it.*/
         temp = temp->next;
     }
     if (temp->next == *LEnd) {
@@ -123,10 +130,10 @@ void RemoveListNode(ListNode** L,ListNode** LEnd,ListNode* NodeToRemove) {
 /*Resets given entry meaning that either clears its list
 /or pushes back an entry from list to bucket's starting entry.*/
 void ResetTableEntry(TableEntry *Entry) {
-    if (Entry->L == NULL) {
+    if (Entry->L == NULL) {                                                                             /*If there is only one item in the bucket.*/
         strcpy(Entry->key,EmptyKey);
     } else {
-        TableEntry * temp;
+        TableEntry * temp;                                                                              /*else push back one element from the list.*/
         strcpy(Entry->key,Entry->L->Entry.key);
         temp =  &(Entry->L->Entry);
         Entry->L = Entry->L->next;
@@ -137,7 +144,7 @@ void ResetTableEntry(TableEntry *Entry) {
 /*Rehashes given table. Splits T->p bucket. Traverse through
 all entries of the T->p bucket and decide if their position will be changed.
 If yes reposition them. */
-int ReHash(Table *T) {
+void ReHash(Table *T) {
     int i;
 
     i = h(T->TableArray[T->p].key,T->doubles+1);
@@ -168,7 +175,7 @@ int HashInsert(Table *T,char key[100],char D[20],int mode) {
         i = h(key,T->doubles+1);
     if (mode == HASH){
         i = h(key,T->doubles);
-        if (i < T->p)
+        if (i < T->p)                                                                                   /*If bucket of entry has already been rehashed,check with h+1 function.*/
             i = h(key,T->doubles+1);
         T->entriesCount++;
         T->loadFactor = T->entriesCount/(double)T->buckets;
@@ -187,6 +194,8 @@ int HashInsert(Table *T,char key[100],char D[20],int mode) {
     if (mode == HASH){																					/*If it's called for hash check for overflow and act accordingly.*/
         if (T->loadFactor > OVERFLOW) {
             T->buckets++;
+            if (T->p == 0)
+                T = extendTable(T);                                                                     /*We need one more segment so allocate needed memory and initialize it.*/
             ReHash(T);
             T->p++;
             if (T->p % (STARTSZ << T->doubles) == 0) {
