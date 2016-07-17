@@ -1,8 +1,10 @@
 #ifndef HASHTABLETYPES_H_INCLUDED
 #define HASHTABLETYPES_H_INCLUDED
 
+typedef char KeyType[100];
+
 typedef struct {
-    char key[100];
+    KeyType key;
     char data[20];
     struct listnode *L;
     struct listnode *LEnd;

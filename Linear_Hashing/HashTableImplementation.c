@@ -84,7 +84,7 @@ Table* extendTable(Table *T){
 /If the bucket at address has been split find new address
 /to check whether key has been rehashed or not.
 /When final address is retrieved search there.*/
-int SearchHash(Table T,char key[100]){
+int SearchHash(Table T,KeyType key){
     ListNode* temp;
     int i = h(key,T.doubles);
     if (i < T.p){
@@ -179,7 +179,7 @@ void ReHash(Table *T) {
     }
 }
 /*Hashes given key.Returns either position or a default value when a rehash is needed.*/
-int HashInsert(Table *T,char key[100],char D[20],int mode) {
+int HashInsert(Table *T,KeyType key,char D[20],int mode) {
     int i;
     if (mode == REHASH)																					/*If it's called for rehashing find the appropriate address in next segment.*/
         i = h(key,T->doubles+1);

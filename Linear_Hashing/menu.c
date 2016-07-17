@@ -27,7 +27,7 @@ void options() {
 /*Read key(s) and insert it/them in the given hash table.*/
 int readFromFile(Table *T) {
     char data[20];
-    char key[100];
+    KeyType key;
     char user_filename[150];
     int pos;
     int count = 0;
@@ -56,7 +56,7 @@ int readFromFile(Table *T) {
 
 /*Read a single key and insert it in the given hash table.*/
 void readHashEntry(Table *T) {
-    char key[100];
+    KeyType key;
     char data[20];
     int pos;
     printf("Enter key:\n");
@@ -100,7 +100,7 @@ void printHashTable(Table T){
 /*Read user's input and act accordingly.*/
 void menu(Table T) {
     int choice;
-    char key[100];
+    KeyType key;
     int pos;
     system("clear");
     options();
